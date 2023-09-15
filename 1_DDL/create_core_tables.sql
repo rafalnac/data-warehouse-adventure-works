@@ -1,6 +1,5 @@
-/*Preapate transformed and cleaned tables for loading into core layer*/
+/*Preapare transformed and cleaned tables for loading into core layer*/
 
-DROP TABLE core.CustomerAddress;
 CREATE TABLE core.CustomerAddress(
 	CustomerAddressKey int IDENTITY(1, 1)
 	,CustomerID int NOT NULL
@@ -16,7 +15,6 @@ CREATE TABLE core.CustomerAddress(
 	,CONSTRAINT PK_CustomerAddress_AddressPK PRIMARY KEY (CustomerAddressKey)
 );
 
-DROP TABLE core.Customer;
 CREATE TABLE core.Customer(
 	CustomerKey int IDENTITY(1, 1)
 	,CustomerID int NOT NULL
@@ -30,12 +28,6 @@ CREATE TABLE core.Customer(
 	,CONSTRAINT PK_Customer_CustomerKey PRIMARY KEY (CustomerKey)
 	,CONSTRAINT FK_Customer_CustomerAddress FOREIGN KEY(CustomerAddressKey) REFERENCES core.CustomerAddress(CustomerAddressKey)
 );
---ALTER TABLE core.Customer WITH NOCHECK
---ADD CONSTRAINT FK_Customer_CustomerAddress FOREIGN KEY(AddressKey)
---REFERENCES core.CustomerAddress(AddressKey);
-
---ALTER TABLE core.Customer
---NOCHECK CONSTRAINT FK_Customer_CustomerAddress;
 
 CREATE TABLE core.Address(
 	AddressKey int IDENTITY(1, 1)
