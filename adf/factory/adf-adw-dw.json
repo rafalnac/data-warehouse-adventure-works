@@ -1,0 +1,9 @@
+{
+	"name": "adf-adw-dw",
+	"location": "northeurope",
+	"identity": {
+		"type": "SystemAssigned",
+		"principalId": "971c99af-4fbb-456a-93c6-b75caeefba0e",
+		"tenantId": "7f3d3234-f2a3-4aa7-a218-1748c56dd22c"
+	}
+}
