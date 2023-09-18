@@ -1,0 +1,100 @@
+{
+	"name": "pl_etl_table_address",
+	"properties": {
+		"activities": [
+			{
+				"name": "Extract from source to staging Address",
+				"type": "Script",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"linkedServiceName": {
+					"referenceName": "ls_azure_sql_db_adventure_works_dw",
+					"type": "LinkedServiceReference"
+				},
+				"typeProperties": {
+					"scripts": [
+						{
+							"type": "Query",
+							"text": "/*Truncate staging table*/\nTRUNCATE TABLE staging.Address;\n/*Insert data from the source table into the staging table*/\nINSERT INTO staging.Address(AddressID, City, StateProvince, CountryRegion, PostalCode)\nSELECT\n\tAddressID\n    ,City\n    ,StateProvince\n    ,CountryRegion\n    ,PostalCode\nFROM SalesLT.Address;"
+						}
+					],
+					"scriptBlockExecutionTimeout": "02:00:00"
+				}
+			},
+			{
+				"name": "Transform to stagging transformed Address",
+				"type": "Script",
+				"dependsOn": [
+					{
+						"activity": "Extract from source to staging Address",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"linkedServiceName": {
+					"referenceName": "ls_azure_sql_db_adventure_works_dw",
+					"type": "LinkedServiceReference"
+				},
+				"typeProperties": {
+					"scripts": [
+						{
+							"type": "Query",
+							"text": "/*Truncate staging table before load.*/\nTRUNCATE TABLE stagingtransformed.Address;\n\n/*Insert into staging transformed table.*/\nINSERT INTO stagingtransformed.Address(AddressID ,City ,StateProvince ,CountryRegion ,PostalCode ,IngestionTimestamp)\nSELECT\n\tAddressID\n    ,City\n    ,StateProvince\n    ,CountryRegion\n    ,PostalCode\n    ,IngestionTimestamp\nFROM staging.Address;"
+						}
+					],
+					"scriptBlockExecutionTimeout": "02:00:00"
+				}
+			},
+			{
+				"name": "Load to core Address",
+				"type": "Script",
+				"dependsOn": [
+					{
+						"activity": "Transform to stagging transformed Address",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"linkedServiceName": {
+					"referenceName": "ls_azure_sql_db_adventure_works_dw",
+					"type": "LinkedServiceReference"
+				},
+				"typeProperties": {
+					"scripts": [
+						{
+							"type": "NonQuery",
+							"text": "/*Load to dimension table - SCD Type 1.*/\n\nMERGE INTO core.Address AS t\nUSING stagingtransformed.Address AS s\nON t.AddressID = s.AddressID\nWHEN MATCHED THEN\nUPDATE SET\n\tt.City = s.City\n\t,t.StateProvince = s.StateProvince\n\t,t.CountryRegion = s.StateProvince\nWHEN NOT MATCHED BY TARGET THEN\nINSERT\n(\n\tAddressID\n    ,City\n    ,StateProvince\n    ,CountryRegion\n    ,PostalCode\n)\nVALUES\n(\n\ts.AddressID\n    ,s.City\n    ,s.StateProvince\n    ,s.CountryRegion\n    ,s.PostalCode\n);"
+						}
+					],
+					"scriptBlockExecutionTimeout": "02:00:00"
+				}
+			}
+		],
+		"annotations": []
+	}
+}
