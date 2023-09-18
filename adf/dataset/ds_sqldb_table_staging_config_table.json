@@ -1,0 +1,32 @@
+{
+	"name": "ds_sqldb_table_staging_config_table",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "ls_azure_sql_db_adventure_works_dw",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "AzureSqlTable",
+		"schema": [
+			{
+				"name": "ConfigID",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "TableName",
+				"type": "nvarchar"
+			},
+			{
+				"name": "WaterMarkValue",
+				"type": "datetime",
+				"precision": 23,
+				"scale": 3
+			}
+		],
+		"typeProperties": {
+			"schema": "staging",
+			"table": "ConfigTable"
+		}
+	}
+}
