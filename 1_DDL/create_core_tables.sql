@@ -92,3 +92,19 @@ CREATE TABLE core.Sales(
 	,CONSTRAINT FK_Sales_Product FOREIGN KEY (ProductKey) REFERENCES core.Product(ProductKey)
 	,CONSTRAINT FK_Sales_ShipMethod FOREIGN KEY (ShipMethodKey) REFERENCES core.ShipMethod(ShipMethodKey)
 );
+
+/*Create indexes for core.Sales table.*/
+CREATE NONCLUSTERED INDEX ix_Sales_SalesOrderId
+ON core.Sales (SalesOrderID);
+
+CREATE NONCLUSTERED INDEX ix_Sales_AddressKey
+ON core.Sales (AddressKey);
+
+CREATE NONCLUSTERED INDEX ix_Sales_CustomerKey
+ON core.Sales (CustomerKey);
+
+CREATE NONCLUSTERED INDEX ix_Sales_ProductKey
+ON core.Sales (ProductKey);
+
+CREATE NONCLUSTERED INDEX ix_Sales_ShipMethodKey
+ON core.Sales (ShipMethodKey);
